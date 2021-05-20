@@ -1,0 +1,32 @@
+1. Buatlah syntax SQL untuk membuat database, table, dan kolom tersebut beserta tipe data,
+keterangan value sebagai primary key, foreign key, dsb.
+
+membuat database : CREATE DATABASE kuliah_nastha;
+
+Membuat table user : CREATE TABLE `kuliah_nastha`.`user` ( `id` INT NOT NULL AUTO_INCREMENT , `email` VARCHAR(255) NOT NULL , `password` VARCHAR(255) NOT NULL , `role` ENUM('mahasiswa','dosen') NOT NULL , PRIMARY KEY (`id`));
+
+Membuat table mahasiswa : CREATE TABLE `kuliah_nastha`.`mahasiswa` ( `nim` INT NOT NULL , `nama` VARCHAR(255) NOT NULL , `alamat` VARCHAR(255) NOT NULL , `tanggal_lahir` DATE NOT NULL , `jurusan` VARCHAR(255) NOT NULL , PRIMARY KEY (`nim`));
+
+Membuat table mata_kuliah : CREATE TABLE `kuliah_nastha`.`mata_kuliah` ( `id` INT NOT NULL AUTO_INCREMENT , `nama_mata_kuliah` VARCHAR(255) NOT NULL , `nim` INT NOT NULL , PRIMARY KEY (`id`)); ALTER TABLE `mata_kuliah` ADD FOREIGN KEY (`nim`) REFERENCES `mahasiswa`(`nim`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+Membuat table dosen : CREATE TABLE `kuliah_nastha`.`dosen` ( `id` INT NOT NULL AUTO_INCREMENT , `nama` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`));
+
+Membuat table data_nilai : CREATE TABLE `kuliah_nastha`.`data_nilai` ( `nim` INT NOT NULL , `id_mata_kuliah` INT NOT NULL , `id_dosen` INT NOT NULL , `nilai` INT NOT NULL , `keterangan` VARCHAR(255) NOT NULL); ALTER TABLE `data_nilai` ADD FOREIGN KEY (`nim`) REFERENCES `mahasiswa`(`nim`) ON DELETE CASCADE ON UPDATE CASCADE; ALTER TABLE `data_nilai` ADD FOREIGN KEY (`id_mata_kuliah`) REFERENCES `mata_kuliah`(`id`) ON DELETE CASCADE ON UPDATE CASCADE; ALTER TABLE `data_nilai` ADD FOREIGN KEY (`id_dosen`) REFERENCES `dosen`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+2. Buatlah syntax SQL untuk insert beberapa data ke table dan kolom database tersebut
+
+INSERT INTO `mahasiswa` (`nim`, `nama`, `alamat`, `tanggal_lahir`, `jurusan`) VALUES ('20203', 'Rizqon Maulana', 'Seputaran', '1997-05-10', 'Teknik Mesin'), ('20204', 'Ridho Anwar', 'Hambalang', '2012-05-13', 'Teknik Listrik');
+
+INSERT INTO `dosen` (`id`, `nama`) VALUES (NULL, 'Joko Pambudi');
+
+INSERT INTO `mata_kuliah` (`id`, `nama_mata_kuliah`, `nim`) VALUES (NULL, 'Jaringan Komputer', '20204');
+
+INSERT INTO `data_nilai` (`nim`, `id_mata_kuliah`, `id_dosen`, `nilai`, `keterangan`) VALUES ('20203', '9', '3', '98', 'good job');
+
+
+3. Buatlah syntax SQL untuk menampilkan semua data mahasiswa termasuk dengan umur (diambil dari kolom tanggal lahir), dosen, mata kuliah, nilai dengan filter nilai yang dibawah 70 dengan urutan nilai paling besar di awal.
+
+SELECT mahasiswa.nim, mahasiswa.nama, alamat, year(curdate())-year(tanggal_lahir)as umur, jurusan, dosen.nama as dosen, nama_mata_kuliah, nilai FROM mahasiswa, mata_kuliah, dosen, data_nilai WHERE mahasiswa.nim = data_nilai.nim AND mata_kuliah.id = data_nilai.id_mata_kuliah AND dosen.id = data_nilai.id_dosen AND data_nilai.nilai < 70 ORDER BY data_nilai.nilai DESC
+
+
